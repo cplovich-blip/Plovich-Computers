@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Halloween Sight Words Game</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+/* -------------------- RESET & BODY -------------------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: linear-gradient(180deg, #0d0d0d, #1a1a1a);
+  color: #fff;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  will-change: transform;
+  transform: translateZ(0);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* -------------------- CONTAINER -------------------- */
+.container {
+  position: relative;
+  text-align: center;
+  background: rgba(255, 140, 0, 0.15);
+  border: 3px solid #ff8c00;
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 0 30px rgba(255, 140, 0, 0.3);
+}
+
+/* -------------------- TITLE -------------------- */
+.title {
+  font-size: 2.5rem;
+  color: #ff8c00;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  margin-bottom: 20px;
+}
+
+/* -------------------- INSTRUCTIONS -------------------- */
+.instructions {
+  font-size: 1.2rem;
+  color: #ffb347;
+  margin-bottom: 25px;
+  font-weight: 600;
+}
+
+/* -------------------- PROGRESS -------------------- */
+.progress {
+  margin: 20px 0;
+  font-size: 1.1rem;
+  color: #ffb347;
+  font-weight: 600;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 10px 0;
+  border: 2px solid #ff8c00;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff8c00, #ffb347);
+  transition: width 0.5s ease;
+  border-radius: 10px;
+}
+
+/* -------------------- WORD DISPLAY -------------------- */
+.word-display {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #ffffff;
+  margin: 25px 0;
+  padding: 30px;
+  background: linear-gradient(135deg, #4B0082, #8B0000);
+  border-radius: 15px;
+  border: 3px solid #ff8c00;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  position: relative;
+}
+
+.word-image {
+  font-size: 4rem;
+  margin-bottom: 10px;
+}
+
+/* -------------------- INPUT AREA -------------------- */
+.input-area {
+  margin: 25px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.typing-input {
+  font-size: 1.8rem;
+  padding: 15px 20px;
+  border: 3px solid #ff8c00;
+  border-radius: 10px;
+  width: 300px;
+  max-width: 100%;
+  text-align: center;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  font-weight: 600;
+}
+
+.typing-input:focus {
+  outline: none;
+  border-color: #ffb347;
+  box-shadow: 0 0 10px rgba(255, 179, 71, 0.5);
+  background: white;
+}
+
+.check-btn {
+  background: linear-gradient(135deg, #32CD32, #228B22);
+  color: white;
+  border: none;
+  padding: 15px 25px;
+  font-size: 1.4rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  transition: transform 0.2s, box-shadow 0.2s;
+  font-weight: 700;
+  border: 2px solid #006400;
+}
+
+.check-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(50, 205, 50, 0.4);
+}
+
+.check-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* -------------------- FEEDBACK -------------------- */
+.feedback {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin: 20px 0;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.correct {
+  color: #32CD32;
+  text-shadow: 0 0 10px rgba(50, 205, 50, 0.5);
+}
+
+.incorrect {
+  color: #FF6347;
+  text-shadow: 0 0 10px rgba(255, 99, 71, 0.5);
+}
+
+/* -------------------- HINT AREA -------------------- */
+.hint-area {
+  background: rgba(139, 0, 0, 0.8);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px 0;
+  border: 2px solid #ff8c00;
+  display: none;
+}
+
+.hint-area p {
+  font-size: 1.1rem;
+  color: #ffb347;
+  margin: 10px 0;
+  font-weight: 600;
+}
+
+#hint-display {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #ffffff;
+  background: rgba(75, 0, 130, 0.8);
+  padding: 15px;
+  border-radius: 8px;
+  border: 2px solid #ffb347;
+}
+
+/* -------------------- COMPLETION SCREEN -------------------- */
+.completion-screen {
+  display: none;
+}
+
+.completion-screen.show {
+  display: block;
+}
+
+.score-display {
+  background: linear-gradient(135deg, #4B0082, #8B0000);
+  border-radius: 15px;
+  padding: 25px;
+  margin: 25px 0;
+  border: 3px solid #ffb347;
+  box-shadow: 0 0 20px rgba(255, 179, 71, 0.3);
+}
+
+.score-text {
+  font-size: 1.4rem;
+  color: #ffb347;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.score-number {
+  font-size: 3.5rem;
+  font-weight: bold;
+  color: #32CD32;
+  text-shadow: 0 0 15px rgba(50, 205, 50, 0.5);
+  margin: 15px 0;
+}
+
+.score-message {
+  font-size: 1.2rem;
+  color: #FF69B4;
+  font-weight: 600;
+  margin-top: 15px;
+}
+
+.restart-btn {
+  background: linear-gradient(135deg, #ff8c00, #FF6347);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  margin-top: 20px;
+  transition: transform 0.2s;
+  font-weight: 700;
+  border: 2px solid #8B0000;
+}
+
+.restart-btn:hover {
+  transform: scale(1.05);
+}
+
+.halloween-emoji {
+  font-size: 2rem;
+  margin: 20px 10px;
+}
+
+/* -------------------- RESPONSIVE -------------------- */
+@media (max-width: 600px) {
+  .container {
+    padding: 20px;
+    margin: 10px;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
+  
+  .word-display {
+    font-size: 2.5rem;
+    padding: 20px;
+  }
+  
+  .typing-input {
+    width: 250px;
+    font-size: 1.5rem;
+    padding: 12px 15px;
+  }
+  
+  .check-btn {
+    font-size: 1.2rem;
+    padding: 12px 20px;
+  }
+  
+  .input-area {
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+</style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="container">
+   <div id="game-screen">
+    <h1 class="title" id="activity-title">Halloween Sight Words Game</h1>
+    <p class="instructions" id="instructions">Type the spooky Halloween word you see!</p>
+    <div class="progress"><span id="progress-text">Word 1 of 10</span>
+     <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width: 10%"></div>
+     </div>
+    </div>
+    <div class="word-display" id="word-display">
+     <div class="word-image" id="word-image">
+      🦇
+     </div>
+     <div id="word-text">
+      bat
+     </div>
+    </div>
+    <div class="input-area"><input type="text" class="typing-input" id="typing-input" placeholder="Type here..." autocomplete="off"> <button class="check-btn" id="check-btn" onclick="checkWord()">Check</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <div class="hint-area" id="hint-area">
+     <p>Here's a spooky hint:</p>
+     <div id="hint-display"></div>
+    </div>
+   </div>
+   <div class="completion-screen" id="completion-screen">
+    <h2 class="title">🎃 Spook-tacular! 🎃</h2>
+    <p class="feedback correct" id="completion-message">Spook-tacular! You typed all the Halloween words!</p>
+    <div class="score-display" id="score-display">
+     <div class="score-text">
+      Your Final Score:
+     </div>
+     <div class="score-number" id="final-score">
+      10/10
+     </div>
+     <div class="score-message" id="score-message">
+      Perfect spelling, little witch! 🧙‍♀️
+     </div>
+    </div>
+    <div class="halloween-emoji">
+     👻 🎃 🦇 🕷️ 🍭
+    </div><button class="restart-btn" onclick="restartActivity()">Play Again</button>
+   </div>
+  </div>
+  <script>
+        const halloweenWords = [
+            { word: 'bat', image: '🦇' },
+            { word: 'cat', image: '🐱' },
+            { word: 'boo', image: '👻' },
+            { word: 'web', image: '🕸️' },
+            { word: 'hat', image: '🎩' },
+            { word: 'owl', image: '🦉' },
+            { word: 'moon', image: '🌙' },
+            { word: 'candy', image: '🍭' },
+            { word: 'ghost', image: '👻' },
+            { word: 'witch', image: '🧙‍♀️' }
+        ];
+
+        let currentWordIndex = 0;
+        let attemptCount = 0;
+        let finalScore = 0;
+
+        const defaultConfig = {
+            activity_title: "Halloween Sight Words Game",
+            instructions: "Type the spooky Halloween word you see!",
+            correct_message: "Boo-tiful job!",
+            try_again_message: "Try again, little ghost!",
+            completion_message: "Spook-tacular! You typed all the Halloween words!",
+            font_size: 20
+        };
+
+        let config = { ...defaultConfig };
+
+        function render(newConfig) {
+            config = { ...config, ...newConfig };
+            
+            document.getElementById('activity-title').textContent = config.activity_title;
+            document.getElementById('instructions').textContent = config.instructions;
+            document.getElementById('completion-message').textContent = config.completion_message;
+            
+            // Apply font size scaling
+            const baseSize = config.font_size || defaultConfig.font_size;
+            document.body.style.fontSize = `${baseSize}px`;
+            
+            // Scale specific elements proportionally
+            const title = document.getElementById('activity-title');
+            if (title) title.style.fontSize = `${baseSize * 1.5}px`;
+            
+            const instructions = document.getElementById('instructions');
+            if (instructions) instructions.style.fontSize = `${baseSize * 0.7}px`;
+            
+            const wordDisplay = document.getElementById('word-text');
+            if (wordDisplay) wordDisplay.style.fontSize = `${baseSize * 1.8}px`;
+            
+            const wordImage = document.getElementById('word-image');
+            if (wordImage) wordImage.style.fontSize = `${baseSize * 2.4}px`;
+            
+            const typingInput = document.getElementById('typing-input');
+            if (typingInput) typingInput.style.fontSize = `${baseSize * 1.1}px`;
+            
+            const checkBtn = document.getElementById('check-btn');
+            if (checkBtn) checkBtn.style.fontSize = `${baseSize * 0.8}px`;
+            
+            const feedback = document.getElementById('feedback');
+            if (feedback) feedback.style.fontSize = `${baseSize * 0.9}px`;
+            
+            const progressText = document.getElementById('progress-text');
+            if (progressText) progressText.style.fontSize = `${baseSize * 0.6}px`;
+            
+            const scoreNumber = document.getElementById('final-score');
+            if (scoreNumber) scoreNumber.style.fontSize = `${baseSize * 2.1}px`;
+            
+            const scoreText = document.getElementById('score-display')?.querySelector('.score-text');
+            if (scoreText) scoreText.style.fontSize = `${baseSize * 0.8}px`;
+            
+            const scoreMessage = document.getElementById('score-message');
+            if (scoreMessage) scoreMessage.style.fontSize = `${baseSize * 0.7}px`;
+        }
+
+        function displayCurrentWord() {
+            const wordText = document.getElementById('word-text');
+            const wordImage = document.getElementById('word-image');
+            const progressText = document.getElementById('progress-text');
+            const progressFill = document.getElementById('progress-fill');
+            const hintArea = document.getElementById('hint-area');
+            
+            const currentWordData = halloweenWords[currentWordIndex];
+            wordText.textContent = currentWordData.word;
+            wordImage.textContent = currentWordData.image;
+            
+            progressText.textContent = `Word ${currentWordIndex + 1} of ${halloweenWords.length}`;
+            
+            const progressPercent = ((currentWordIndex + 1) / halloweenWords.length) * 100;
+            progressFill.style.width = progressPercent + '%';
+            
+            // Reset attempt count and hide hint for new word
+            attemptCount = 0;
+            hintArea.style.display = 'none';
+        }
+
+        function showHint(userInput, correctWord) {
+            const hintArea = document.getElementById('hint-area');
+            const hintDisplay = document.getElementById('hint-display');
+            
+            // Show the complete word with missed letters highlighted
+            let hintHTML = '';
+            for (let i = 0; i < correctWord.length; i++) {
+                if (i < userInput.length && userInput[i] === correctWord[i]) {
+                    // Correct letter - normal style
+                    hintHTML += `<span style="color: #32CD32;">${correctWord[i]}</span>`;
+                } else {
+                    // Missed letter - highlighted
+                    hintHTML += `<span style="color: #FF6347; font-weight: bold;">${correctWord[i]}</span>`;
+                }
+            }
+            
+            hintDisplay.innerHTML = hintHTML;
+            hintArea.style.display = 'block';
+        }
+
+        function checkWord() {
+            const input = document.getElementById('typing-input');
+            const feedback = document.getElementById('feedback');
+            const checkBtn = document.getElementById('check-btn');
+            const userInput = input.value.toLowerCase().trim();
+            const currentWord = halloweenWords[currentWordIndex].word.toLowerCase();
+
+            if (userInput === '') {
+                feedback.textContent = 'Type something spooky first! 👻';
+                feedback.className = 'feedback incorrect';
+                return;
+            }
+
+            // Disable button during feedback
+            checkBtn.disabled = true;
+            input.disabled = true;
+            
+            if (userInput === currentWord) {
+                feedback.textContent = config.correct_message + ' 🎃';
+                feedback.className = 'feedback correct';
+                
+                // Award 1 point for getting the word correct (regardless of attempts)
+                finalScore += 1;
+                
+                setTimeout(() => {
+                    currentWordIndex++;
+                    if (currentWordIndex >= halloweenWords.length) {
+                        showCompletionScreen();
+                    } else {
+                        displayCurrentWord();
+                        input.value = '';
+                        feedback.textContent = '';
+                        input.disabled = false;
+                        checkBtn.disabled = false;
+                        input.focus();
+                    }
+                }, 1500);
+            } else {
+                attemptCount++;
+                
+                if (attemptCount >= 3) {
+                    // Show hint with missed letters after 3 attempts
+                    feedback.textContent = "Here's the word with the letters you missed! 🕷️";
+                    feedback.className = 'feedback incorrect';
+                    showHint(userInput, currentWord);
+                    
+                    setTimeout(() => {
+                        currentWordIndex++;
+                        if (currentWordIndex >= halloweenWords.length) {
+                            showCompletionScreen();
+                        } else {
+                            displayCurrentWord();
+                            input.value = '';
+                            feedback.textContent = '';
+                            input.disabled = false;
+                            checkBtn.disabled = false;
+                            input.focus();
+                        }
+                    }, 4000);
+                } else {
+                    feedback.textContent = config.try_again_message + ` (Attempt ${attemptCount} of 3) 🦇`;
+                    feedback.className = 'feedback incorrect';
+                    // Don't clear input - let them retype the word
+                    input.disabled = false;
+                    checkBtn.disabled = false;
+                    input.focus();
+                    input.select(); // Select all text so they can easily retype
+                }
+            }
+        }
+
+        function showCompletionScreen() {
+            // Update score display
+            const scoreNumber = document.getElementById('final-score');
+            const scoreMessage = document.getElementById('score-message');
+            
+            scoreNumber.textContent = `${finalScore}/10`;
+            
+            // Set encouraging message based on score
+            if (finalScore === 10) {
+                scoreMessage.textContent = "Perfect spelling, little witch! 🧙‍♀️";
+            } else if (finalScore >= 8) {
+                scoreMessage.textContent = "Spook-tacular job! 👻";
+            } else if (finalScore >= 6) {
+                scoreMessage.textContent = "Great work, ghost! 🎃";
+            } else if (finalScore >= 4) {
+                scoreMessage.textContent = "Good effort, little bat! 🦇";
+            } else {
+                scoreMessage.textContent = "Keep practicing, brave spider! 🕷️";
+            }
+            
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('completion-screen').classList.add('show');
+        }
+
+        function restartActivity() {
+            currentWordIndex = 0;
+            attemptCount = 0;
+            finalScore = 0;
+            
+            document.getElementById('game-screen').style.display = 'block';
+            document.getElementById('completion-screen').classList.remove('show');
+            document.getElementById('typing-input').value = '';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('hint-area').style.display = 'none';
+            document.getElementById('typing-input').disabled = false;
+            document.getElementById('check-btn').disabled = false;
+            
+            displayCurrentWord();
+            document.getElementById('typing-input').focus();
+        }
+
+        // Event listeners
+        document.getElementById('typing-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkWord();
+            }
+        });
+
+        // Initialize the activity
+        displayCurrentWord();
+        document.getElementById('typing-input').focus();
+        
+        // Apply initial font size
+        render(defaultConfig);
+
+        // Element SDK integration
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                render,
+                mapToCapabilities: (config) => ({
+                    recolorables: [
+                        {
+                            get: () => config.primary_color || '#ff8c00',
+                            set: (value) => {
+                                config.primary_color = value;
+                                window.elementSdk.setConfig({ primary_color: value });
+                            }
+                        },
+                        {
+                            get: () => config.background_color || '#4B0082',
+                            set: (value) => {
+                                config.background_color = value;
+                                window.elementSdk.setConfig({ background_color: value });
+                            }
+                        }
+                    ],
+                    borderables: [],
+                    fontEditable: {
+                        get: () => config.font_family || 'Comic Sans MS',
+                        set: (value) => {
+                            config.font_family = value;
+                            window.elementSdk.setConfig({ font_family: value });
+                        }
+                    },
+                    fontSizeable: {
+                        get: () => config.font_size || 20,
+                        set: (value) => {
+                            config.font_size = value;
+                            window.elementSdk.setConfig({ font_size: value });
+                        }
+                    }
+                }),
+                mapToEditPanelValues: (config) => new Map([
+                    ['activity_title', config.activity_title || defaultConfig.activity_title],
+                    ['instructions', config.instructions || defaultConfig.instructions],
+                    ['correct_message', config.correct_message || defaultConfig.correct_message],
+                    ['try_again_message', config.try_again_message || defaultConfig.try_again_message],
+                    ['completion_message', config.completion_message || defaultConfig.completion_message]
+                ])
+            });
+        }
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9935e7f3628d6183',t:'MTc2MTI3MTQ5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
